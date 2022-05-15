@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <title>Monaca Education ダイレクトプレビュー</title>
+    <script src="components/loader.js"></script><link rel="stylesheet" href="components/loader.css">
+    <script src="js/dexie.js"></script>
+    <script src="js/shepherd.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/shepherd.css">
+    <script src="js/education.js" defer></script><script src="js/config.js" defer></script><script src="js/main.js" defer></script>
+    
+    </script>
+</head>
+<body>
+    <main>
+        <!-- 追加メニュー -->
+        <section class="contentsWrapper closed" id="addWrapper">
+            <form class="register">
+                <div class="word-wrapper">
+                    <div class="word-area">
+                        <label class="label" for="register-english">英語</label>
+                        <button class="clear" type="button">クリア</button>
+                        <textarea id="register-english"></textarea>
+                    </div>
+
+                    <div class="word-area">
+                        <label class="label" for="register-japanese">和訳</label>
+                        <button class="clear" type="button">クリア</button>
+                        <textarea id="register-japanese"></textarea>
+                    </div>
+                </div>
+                
+                <div class="register-tags scroll-set" id="register-tags">
+                    <button id="register-tags-add" class="register-tags-add open-button" type="button" >タグの追加 ＋</button>
+                </div>
+
+                <div class="register-submit">
+                    <button class="submit-button register-submit-create" id="register-submit-button" type="button">カード作成</button>
+                </div>
+            </form>
+        </section>
+        <!-- 編集メニュー -->
+        <section class="contentsWrapper closed" id="editWrapper">
+            <form class="edit">
+                <div class="word-wrapper">
+                    <div class="word-area">
+                        <label class="label" for="edit-english">英語</label>
+                        <button class="clear" type="button">クリア</button>
+                        <textarea id="edit-english"></textarea>
+                    </div>
+
+                    <div class="word-area register-japanese">
+                        <label class="label" for="edit-japanese">和訳</label>
+                        <button class="clear" type="button">クリア</button>
+                        <textarea id="edit-japanese"></textarea>
+                    </div>
+                </div>
+                
+                <div class="edit-tags scroll-set" id="edit-tags">
+                    <button class="edit-tags-add open-button" id="edit-tags-add"  type="button" >タグの追加 ＋</button>
+                </div>
+
+                <div class="edit-submit">
+                    <button class="submit-button edit-submit-del" type="button">削除</button>
+                    <button class="submit-button edit-submit-edit" type="button">保存</button>
+                </div>
+            </form>
+        </section>
+        <!-- ホームメニュー -->
+        <section class="contentsWrapper closed" id="homeWrapper">
+            <h1 class="cal-header" id="cal-header"></h1>
+            <div class="cal-move">
+                <button class="cal-move-prev" id="prev"><</button>
+                <button class="cal-move-next" id="next">></button>
+            </div>
+            <div id="calendar"></div>
+        </section>
+        <!-- 一覧メニュー -->
+        <section class="contentsWrapper listWrapper" id="listWrapper">
+            <div class="searchWindow">
+                <div class="searchWindow-options">
+                    <h1>検索方法</h1>
+                    <button class="searchWindow-options-type" id="searchWindow-options-type">タグ名</button>
+                    <button class="searchWindow-options-logic" id="searchWindow-options-logic">全て含む</button>
+                </div>
+                <div class="searchWindow-search">
+                    <input class="searchWindow-search-text" id="searchWindow-search-text" type="text" placeholder="例) 期末 フルーツ">
+                    <button class="searchWindow-search-submit" id="searchWindow-search-submit">検索</button>
+                </div>  
+                </div>
+                <div class="searchResult scroll-set">
+                    <table class="searchResult-table">
+                        <tbody class="searchResult-table-body scroll-set" id="searchResult-table-body">
+   
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        <!-- <div class="contentsWrapper" id="testWrapper">
+            テスト
+        </div> -->
+        <div class="contentsWrapper closed" id="helpWrapper">
+            ヘルプ
+        </div>
+
+    </main>
+
+<!-- タグ管理モーダル -->
+    <aside class="modal-overlay closed" id="modal-overlay">
+        <div class="modal closed scroll-set" id="modal">
+            <button class="close-button" id="close-button">閉じる</button>
+            <div class="modal-content">
+                <ul class="tag-list" id="tag-list" >
+                    <li class="tag-list-create" id="tag-list-create">
+                        <input type="text" class="tag-list-create-text" id="tag-list-create-text" placeholder="タグ名を入力">
+                        <button class="tag-list-create-button" id="tag-list-create-button">作成</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+<!-- 3秒で消えるポップアップ -->
+    <aside class="time-modal" id="time-modal">
+    </aside>
+
+    <footer>
+        <ul class="footer-ul">
+            <li><button type="button" class="ft-menu" id="ft-add">追加</button></li>
+            <li><button type="button" class="ft-menu" id="ft-home">ホーム</button></li>
+            <li><button type="button" class="ft-menu" id="ft-list">一覧</button></li>
+            <!-- <li><button type="button" class="ft-menu" id="ft-test">テスト</button></li> -->
+            <li><button type="button" class="ft-menu" id="ft-help">ヘルプ</button></li>
+        </ul>
+    </footer>
+</body>
+</html>

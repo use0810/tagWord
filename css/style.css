@@ -1,0 +1,596 @@
+html {
+    /*  
+    320px(スマホ最小幅)の時に1remが16pxで
+    1440px(PC)の時に1remが24pxの可変サイズ
+    16 = 320a + b
+    24 = 1440a + b
+    a = 1 / 140
+    b = -(320 / 140) + 16
+    y = ax + b に上を代入
+    y = (x-320)/140 + 16
+    なおxは100vwとする
+     */
+    font-size: calc((100vw - 320px)/140 + 16px);
+    height: 100%;
+}
+
+
+body {
+    margin: 0;
+    background-color: aliceblue;
+    font-family:'メイリオ', 'Meiryo', sans-serif;
+    height: 100%;
+}
+h1 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+p {
+    margin: 0;
+}
+
+label{
+    font-size: 1.2rem;
+}
+
+li {
+    list-style: none;
+}
+
+button {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    height: 90%;
+}
+footer {
+    height: 10%;
+    width: 100%;
+    position: -webkit-sticky;
+    position: sticky;
+    transform: translate3d(0,0,0);
+    bottom: 0;
+}
+
+footer > ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    height:100%;
+    width: 100%;
+}
+
+
+footer > ul >li {
+    list-style: none;
+    width: 25%;
+    display: table;
+    text-align: center;
+    height: 100%;
+}
+
+.ft-menu {
+    box-sizing: border-box;
+    border: 2px solid #EEFFFF;  
+    border-radius: 10px;
+    display: table-cell;
+    vertical-align: middle;
+    height:100%;
+    width: 100%;
+    background: rgba(188, 226, 232, 0.603);
+    color: gray;
+    /*  */
+    font-size: 1rem;
+}
+
+main {
+    height: 90%;
+}
+
+.contentsWrapper {
+    width: 90%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+/* ホーム画面 */
+.cal-header {
+    text-align: center;
+}
+
+.cal-move {
+    display: flex;
+    justify-content: space-around;
+}
+
+.cal-move button {
+    background: #e6e6fa;
+    border: 1px solid #f0f8ff;
+    border-radius: 4px;
+    padding: 0.2rem 1rem;
+    font-size: 1rem;
+}
+
+.disabled {
+   opacity: 0.3;
+}
+
+.cal-table {
+    outline: 2px solid #ddd;
+    width: 100%;
+    height: 100%;
+}
+
+.cal-td, .cal-th {
+    outline: 1px solid #ddd;
+    text-align: center;
+}
+
+.cal-td:first-child {
+    color: red;
+}
+
+.cal-td:last-child {
+    color: blue;
+}
+
+/* .title {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #9FD9F6;
+    color: white;
+}
+
+.canvas {
+    width: 100%;
+    height: 20%;
+}
+
+.week-table {
+  width: 100%;
+  table-layout: fixed;
+  user-select: none;
+  border-collapse:collapse;
+}
+
+.week-td {
+  border:1px solid #a9a9a9;
+  text-align: center;
+} */
+
+
+/* 単語登録画面(追加画面)のスタイル*/
+
+.register, .edit {
+    width: 100%;
+    height: 100%;
+    display:flex;
+    margin: 0 auto;
+    flex-direction:column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.word-wrapper {
+    display: flex;
+    height: 50%;
+    width: 100%;
+}
+
+.register-tags, .edit-tags {
+    height: 20%;
+    width: 90%;
+    overflow-y: scroll;
+    background: rgba(204, 236, 241, 0.603);
+
+}
+
+.register-submit, .edit-submit {
+    height: 10%;
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: center; /*左右中央揃え*/
+    align-items: center;     /*上下中央揃え*/
+}
+
+
+.word-area {
+    height: 90%;
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+}
+
+.word-area > textarea {
+    display: block;
+    font-size: 1.2rem;
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    -webkit-box-sizing:border-box; /* Chrome, Safari */
+    border: solid;
+    border-radius: 2vh;
+    height: 90%;
+    width: 100%;
+    
+    padding: 0.2rem;
+    transition: border 1s  ease;
+
+}
+
+.word-area > textarea:focus {
+    outline: 0;
+    border: solid rgb(174, 236, 51);
+}
+
+.clear {
+    font-size: 1rem;
+    margin-bottom: 3px;
+}
+
+.register-tags-tag, .edit-tags-tag {
+    /* ”タグの追加”で追加されたタグボタン */
+    font-size: 1.2rem;
+    line-height: 1;
+    background-color: antiquewhite;
+    border: none;
+    border-radius: 10px;
+    vertical-align: text-top;
+    margin: 0.2rem;
+    padding: 0.2rem;
+}
+
+.register-tags-add, .edit-tags-add {
+    font-size: 1.2rem;
+    line-height: 1;
+    background-color: rgb(204, 204, 204);
+    border: none;
+    border-radius: 10px;
+    vertical-align: text-top;
+    margin: 0.2rem;
+    padding: 0.2rem;
+}
+
+
+.submit-button {
+    /* 作成・編集・削除ボタンひな形 */
+    width: 100%;
+    max-width: 500px;
+    color: rgb(255, 255, 255);
+    font-weight: bolder;
+    border: none;
+    border-radius: 2vh;
+    font-size: 1.5rem;
+}
+
+.register-submit-create {
+    /* カード作成ボタン */
+    background-color: rgb(0, 255, 200);
+}
+
+/* 編集ページ */
+
+.edit-submit-del {
+    /* カード削除ボタン */
+    background-color: #ff6347;
+}
+
+.edit-submit-edit {
+    /* カード編集ボタン */
+    background-color: #00bfff;
+}
+
+/* 一覧画面 */
+
+.listWrapper {
+    display: flex;
+    flex-flow: column;
+    width: 95%;
+  
+}
+
+.searchWindow {
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+    border: 2px solid #a2c2d1;
+    border-radius: 5px;
+}
+
+.searchWindow-options {
+    display: block;
+    align-items: center;
+    justify-content: space-around;    
+}
+.searchWindow-options h1 {
+    margin: 0;
+    background: #0094D6;
+    color: #fff;
+    font-size: 1rem;
+}
+
+
+.searchWindow-options-type {
+    margin: .5rem 1rem;
+    padding: .5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffa500;
+    font-size: 1rem;
+}
+
+.searchWindow-options-logic {
+    margin: .5rem 1rem;
+    padding: .5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffa500;
+    font-size: 1rem;
+}
+
+.searchWindow-search {
+    padding: .5rem;
+    border-top: 2px solid #0094D6;
+}
+
+.searchWindow-search-text {
+    margin: .2rem;
+    font-size: 1rem;
+}
+
+.searchWindow-search-submit {
+    font-size: 1rem;
+}
+
+.searchResult {
+  overflow-y: scroll;
+}
+
+.searchResult-table {
+    width: 100%;
+    table-layout: fixed;
+    user-select: none;
+}
+
+.searchResult-table-body {
+    width: 100%;
+}
+
+
+.searchResult td {
+    width: 100%;
+    user-select: none; 
+    -moz-user-select: none; /* Firefox */
+    -webkit-user-select: none; /* Safari、Chrome */
+    -ms-user-select: none; /* IE10 */
+    text-align: center;
+    vertical-align: middle; 
+    background-color: white;
+    border-radius: 5px;
+    
+    height: 5rem;
+    font-size: 1.5rem;
+}
+
+
+/* タグ管理モーダル設定 */
+
+.modal-overlay {
+    /* タグ管理モーダルの背後 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.modal {
+    /* タグ管理モーダルウィンドウ */
+    display: block;
+    width: 600px;
+    max-width: 90%;
+    height: 60%;
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    box-shadow: 0 0 60px 10px rgba(0, 0, 0, 0.9);
+    word-break: break-all; 
+    overflow-y: scroll;
+}
+
+.modal-content {
+    /* タグ管理モーダル内テキスト */
+    width: 90%;
+    margin: 0 auto;
+    height: 100%;
+}
+
+.tag-list {
+    /* モーダル内タグリスト全体(ul) */
+    display:flex;
+    flex-flow: column;
+    margin: 0;
+    padding: 0;
+}
+
+.tag-list-item {
+    /* モーダル内タグリスト(li) */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+.tag-list-item-button {
+    /* モーダル内タグリストのタグ */
+    border: none;
+    background-color: antiquewhite;
+    border-radius: 2vh;
+    text-align: left;
+    max-width: 80%;
+    font-size: 1.5rem;
+    padding: 0.2rem;
+}
+
+.tag-list-item-del {
+    /* モーダル内タグリストのタグ削除ボタン */
+    height: 100%;
+    font-size: 1.2rem;
+}
+
+.tag-list-create{
+    /* モーダル内タグリストの追加全体 */
+    display: flex;
+    margin: 10px 0;
+    align-items: center;
+}
+
+.tag-list-create-text{
+    /* モーダル内タグリストの追加テキスト入力 */
+    width: 60%;
+    line-height: 1.2;
+    border: 1px solid;
+    font-size: 1.5rem;
+}
+
+.tag-list-create-button {
+    /* モーダル内タグリストの追加確定ボタン */
+    margin-left: 1rem;
+    color: rgb(255, 255, 255);
+    font-weight: bolder;
+    padding: 0.2rem;
+    border: 1px solid;
+    background-color: rgb(0, 255, 200);
+    font-size: 1.5rem;
+}
+
+.close-button {
+    display: block;
+    padding: 0.2rem;
+    margin: 0 0 20px auto;
+    border: 0;
+    background: black;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* 3秒で消えるモーダルの設定 */
+
+.time-modal {
+    position: fixed;
+    top: 0.3rem;
+    left:0;
+    right: 0;
+    margin: auto;
+	width: 85%;
+	max-width: 400px;
+    border-radius: 3px;
+	z-index: 1000;
+}
+
+.time-modal-content {
+    padding: 0.5rem;
+	text-align: center;
+	box-sizing: border-box;
+	background: rgba(0, 0, 0, 0.7);
+	color: #fff;
+}
+
+.time-modal-content2 {
+    padding: 0.5rem;
+	text-align: center;
+	box-sizing: border-box;
+	background: rgba(0, 255, 64, 0.7);
+	color: #fff;
+}
+
+.fade-out {
+    animation: fadein-keyframes 4s ease-in 0s 1 forwards;
+}
+@keyframes fadein-keyframes {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+
+/* その他の設定 */
+
+.closed {
+    /* 閉じる設定全般共通クラス */
+    display: none;
+}
+
+/* スクロールバーの設定 */
+.scroll-set::-webkit-scrollbar {
+    width: 16px;
+}
+.scroll-set::-webkit-scrollbar-track {
+    background-color: #e4e4e4;
+    border-radius: 100px;
+}
+.scroll-set::-webkit-scrollbar-thumb {
+    background-color: #00b2e9;
+    border-radius: 100px;
+}
+
+/* スマホ縦画面時の設定*/
+@media (orientation: portrait){
+    .word-wrapper {
+        display: flex;
+        flex-flow: column;  
+        height: 70%;
+        width: 100%;
+    }
+    .word-area {
+        height: 50%;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.5rem;
+        
+    }
+    .register-tags, .edit-tags {
+        max-height: 15%;
+        min-height: 12%;
+        width: 90%;
+        overflow-y: scroll;
+        background: rgba(204, 236, 241, 0.603);
+    }
+
+    .register-submit, .edit-submit {
+        height: 5%;
+        width: 100%;
+        padding: 5px;
+        display: flex;
+        justify-content: center; /*左右中央揃え*/
+        align-items: center;     /*上下中央揃え*/
+    }
+}
+
+/* 画面サイズが480px以上の時 */
+@media screen and (min-width: 480px) {
+
+
+} 
+
+@media screen and (min-width:768px) and ( max-width:1024px) {
+    /* 画面サイズが768pxから1024pxまで */
+
+}
+@media screen and (min-width:1024px) {
+    /* 画面サイズが1024px以上の時*/
+ 
+}
