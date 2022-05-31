@@ -146,9 +146,15 @@ function cardMakeFunc(record) {
     const td1Text = document.createTextNode(record.english);
     const td2Text = document.createTextNode(record.japanese);
 
+    // 日本語は最初非表示
+    newTd2.classList.add('closed');
+
+    newTd1.setAttribute("colspan", "2");
+
     // カードをロングタップ(1秒)したときに編集画面を表示する処理
     let timerCount = 0;
     let timerID;
+
     newTr.addEventListener('pointerdown', () => {
         timerID = setInterval(()=>{
             timerCount ++;
@@ -162,8 +168,34 @@ function cardMakeFunc(record) {
     });
     // カードから指（orクリック）が離れたらインターバルを中止
     newTr.addEventListener('pointerup', () => {
-        timerCount = 0
+        timerCount = 0;
         clearInterval(timerID);
+        // swipeOk = true;
+        if( newTd1.getAttribute('colspan') === '1'){
+            newTd1.setAttribute('colspan', '2');
+        }else{
+            newTd1.setAttribute('colspan', '1');
+        }
+        newTr.lastChild.classList.toggle('closed');
+    });
+
+    // スワイプしたときに編集画面が出てしまうバグ対策の処理
+    newTr.addEventListener('touchmove', () => {
+        timerCount = 0;
+        clearInterval(timerID);
+    //     if (swipeOk){
+    //         swipeOk = false;
+    //         // this.classList.toggle('closed');
+    //         if( newTd1.getAttribute('colspan') === '1'){
+    //             newTd1.setAttribute('colspan', '2');
+    //         }else{
+    //             newTd1.setAttribute('colspan', '1');
+    //         }
+    //         newTr.lastChild.classList.toggle('closed');
+    //     }
+    // });
+    // newTr.addEventListener('touchend', () => {
+    //     swipeOk = true;
     });
 
     // 一時的な変数に表示情報を格納
@@ -175,7 +207,7 @@ function cardMakeFunc(record) {
     return newTr;
 }
 
-// カードを一覧に表示する①。引数には表示するカードのID群。
+// カードを一覧に表示する①。引数には表示するカードのID群。途中②を呼び出す。
 function cardDisplayFunc(wordIndexes){
     const searchResultTableBody = document.getElementById('searchResult-table-body');
     const tmpEleWords = document.createDocumentFragment();
@@ -385,15 +417,9 @@ function addTagFunc(text){
 
     try {
         [].slice.call(parent.children).forEach((child) => {
-            if (child.textContent === text) {   // もしタグが追加済みなら
-                const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-                const timeModalContent = document.createElement('div');
-                timeModalContent.setAttribute('class', 'time-modal-content fade-out');
-                timeModalContent.textContent = "このタグは追加済みです"; 
-                timeModal.appendChild(timeModalContent);
-                setTimeout(() => {
-                    timeModalContent.remove();
-                }, 3800);
+            if (child.textContent === text) {
+                // もしタグが追加済みなら
+                timeModalFunc("このタグは追加済みです", 1);
                 throw new Error('重複');
             }
         });
@@ -465,14 +491,7 @@ function valueCheck(english, japanese, tags) {
     // 英単語が入っているかチェック
     if(english === ""){
         // 英語のテキストが空だったら
-        const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-        const timeModalContent = document.createElement('div');
-        timeModalContent.setAttribute('class', 'time-modal-content fade-out');
-        timeModalContent.textContent = "英語を入力してください"; 
-        timeModal.appendChild(timeModalContent);
-        setTimeout(() => {
-            timeModalContent.remove();
-        }, 3800);
+        timeModalFunc("英語を入力してください", 1);
     } else {
         flagCount++;
     }
@@ -480,14 +499,7 @@ function valueCheck(english, japanese, tags) {
     // 日本語訳が入っているかチェック
     if(japanese === ""){
         // 日本語訳のテキストが空だったら
-        const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-        const timeModalContent = document.createElement('div');
-        timeModalContent.setAttribute('class', 'time-modal-content fade-out');
-        timeModalContent.textContent = "和訳を入力してください"; 
-        timeModal.appendChild(timeModalContent);
-        setTimeout(() => {
-            timeModalContent.remove();
-        }, 3800);
+        timeModalFunc("和訳を入力してください", 1);
     } else {
         flagCount++;
     }
@@ -495,14 +507,7 @@ function valueCheck(english, japanese, tags) {
     // タグが入っているかチェック
     if(tags.length === 0){
         // タグが入ってなかったら
-        const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-        const timeModalContent = document.createElement('div');
-        timeModalContent.setAttribute('class', 'time-modal-content fade-out');
-        timeModalContent.textContent = "タグを一つ以上追加してください"; 
-        timeModal.appendChild(timeModalContent);
-        setTimeout(() => {
-            timeModalContent.remove();
-        }, 3800);
+        timeModalFunc("タグを一つ以上追加してください", 1);
     } else {
         flagCount++;
     }
@@ -535,15 +540,11 @@ tagListCreateButton.addEventListener('click', () => {
             });
         } else {
             // もしタグ名が重複していたら
-            const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-            const timeModalContent = document.createElement('div');
-            timeModalContent.setAttribute('class', 'time-modal-content fade-out');
-            timeModalContent.textContent = "タグが重複しています"; 
-            timeModal.appendChild(timeModalContent);
-            setTimeout(() => {
-                timeModalContent.remove();
-            }, 3800);
+            timeModalFunc("タグが重複しています", 1);
         }
+    }else{
+         // もしタグ名を入力していなかったら
+        timeModalFunc("タグ名を入力してください", 1);
     }
 });
 
@@ -623,14 +624,7 @@ registerSubmitButton.addEventListener('click', () => {
                 if(listAddFlag) cardDisplayFunc(id);
             });   
         });
-        const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-        const timeModalContent = document.createElement('div');
-        timeModalContent.setAttribute('class', 'time-modal-content2 fade-out');
-        timeModalContent.textContent = "単語を作成しました"; 
-        timeModal.appendChild(timeModalContent);
-        setTimeout(() => {
-            timeModalContent.remove();
-        }, 3800);      
+        timeModalFunc("単語を作成しました", 2);   
     }
 });
 
@@ -728,14 +722,7 @@ editSubmitEdit.addEventListener('click', () => {
             editTarget.replaceWith(newTr);
             });
         });
-        const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
-        const timeModalContent = document.createElement('div');
-        timeModalContent.setAttribute('class', 'time-modal-content2 fade-out');
-        timeModalContent.textContent = "単語を編集しました"; 
-        timeModal.appendChild(timeModalContent);
-        setTimeout(() => {
-            timeModalContent.remove();
-        }, 3800);
+        timeModalFunc("単語を編集しました", 2);
         currentTarget.classList.toggle('closed');
         listWrapper.classList.toggle('closed');
         currentTarget = listWrapper;
@@ -743,152 +730,346 @@ editSubmitEdit.addEventListener('click', () => {
 });
 
 /* ============================================================
-[Programs] ホーム画面処理
+[Programs] 初回ログイン時のガイド
 [Outline] 
 
 ============================================================ */
 
-const week = ["日", "月", "火", "水", "木", "金", "土"];
-const prev = document.getElementById('prev');
-const next = document.getElementById('next');
-const today = new Date();
-const showDate = new Date(today.getFullYear(), today.getMonth(), 1);
-showProcess(today, calendar);
+const keyName = 'visited';
+const keyValue = true;
+localStorage.removeItem(keyName);
 
-// 前の月表示
-prev.addEventListener('click', () => {
-    showDate.setMonth(showDate.getMonth() - 1);
-    showProcess(showDate);
-});
+if (!localStorage.getItem(keyName)) {
+    //localStorageにキーと値を追加
+    localStorage.setItem(keyName, keyValue);
 
-// 次の月表示
-next.addEventListener('click', () => {
-    showDate.setMonth(showDate.getMonth() + 1);
-    showProcess(showDate);
-});
+    const tour = new Shepherd.Tour({
+        useModalOverlay: true,
+        defaults: {
+            scrollTo: true
+        } 
+    });
 
-// カレンダー表示
-function showProcess(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    document.getElementById('cal-header').innerHTML = year + "年 " + (month + 1) + "月";
-    const calendar = createProcess(year, month);
-    document.getElementById('calendar').innerHTML = calendar;
-}
-
-// カレンダー作成
-function createProcess(year, month) {
-    // 曜日
-    let calendar = "<table class='cal-table'><tr class='dayOfWeek'>";
-    for (let i = 0; i < week.length; i++) {
-        calendar += "<th class='cal-th'>" + week[i] + "</th>";
-    }
-    calendar += "</tr>";
-
-    let count = 0;
-    const startDayOfWeek = new Date(year, month, 1).getDay();
-    const endDate = new Date(year, month + 1, 0).getDate();
-    const lastMonthEndDate = new Date(year, month, 0).getDate();
-    const row = Math.ceil((startDayOfWeek + endDate) / week.length);
-
-    // 1行ずつ設定
-    for (let i = 0; i < row; i++) {
-        calendar += "<tr>";
-        // 1colum単位で設定
-        for (let j = 0; j < week.length; j++) {
-            if (i == 0 && j < startDayOfWeek) {
-                // 1行目で1日まで先月の日付を設定
-                calendar += "<td class='cal-td disabled'>" + (lastMonthEndDate - startDayOfWeek + j + 1) + "</td>";
-            } else if (count >= endDate) {
-                // 最終行で最終日以降、翌月の日付を設定
-                count++;
-                calendar += "<td class='cal-td disabled'>" + (count - endDate) + "</td>";
-            } else {
-                // 当月の日付を曜日に照らし合わせて設定
-                count++;
-                if(year == today.getFullYear()
-                  && month == (today.getMonth())
-                  && count == today.getDate()){
-                    calendar += "<td class='cal-td today'>" + count + "</td>";
-                } else {
-                    calendar += "<td class='cal-td'>" + count + "</td>";
-                }
+    tour.addStep({
+        id: 'first',
+        text: 'ようこそタグ単へ！ \n チュートリアルを開始しますか？',
+        // attachTo: {
+        //     element: '.searchWindow-options-type ',
+        //     on: 'bottom'
+        // },
+        buttons: [
+            {
+                action: tour.cancel,
+                secondary: true,
+                text: 'いいえ'
+            },
+            {
+                action: tour.next,
+                text: 'はい',
             }
-        }
-        calendar += "</tr>";
-    }
-    return calendar;
+        ]
+    });
+
+    tour.addStep({
+        text: 'まずは単語を追加しましょう。',
+        attachTo: {
+            element: '#ft-add',
+            on: 'top'
+        },
+        advanceOn: {selector: '#ft-add', event: 'click'}
+    });
+
+    // tour.addStep({
+    //     id: 'englishStep',
+    //     text: '覚えたい英単語を入力しましょう。',
+    //     attachTo: {
+    //         element: '#register-english',
+    //         on: 'bottom'
+    //     },
+    //     advanceOn: {selector: '#register-english', event: 'click'}
+    // });
+
+    tour.addStep({
+        id: 'englishStep',
+        text: '<p>覚えたい英単語を入力します。\n</p><p>ここでは<span style="font-weight: bold; color:red;">apple</span>と入力してください。\n</p>入力を完了したら次へ進みましょう。',
+        attachTo: {
+            element: '#register-english',
+            on: 'bottom'
+        },
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ'
+            }
+        ]
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const registerEnglishText = document.getElementById('register-english').value.replace(/\n/g,'');
+                if(registerEnglishText !== 'apple'){
+                    timeModalFunc("appleと入力してください",1)
+                    tour.show('englishStep');
+                }else{
+                    resolve();
+                }
+            });
+        },
+        id: 'japaneseStep',
+        text: '<p>和訳を入力します。\n</p><p>ここでは<span style="font-weight: bold; color:red;">りんご</span>と入力してください。\n</p>入力を完了したら次へ進みましょう。',
+        attachTo: {
+            element: '#register-japanese',
+            on: 'bottom'
+        },
+        buttons: [
+            {
+                action: tour.back,
+                secondary: true,
+                text: '戻る'
+            },
+            {
+                action: tour.next,
+                text: '進む'
+            }
+        ]
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const registerJapaneseText = document.getElementById('register-japanese').value.replace(/\n/g,'');
+                if(registerJapaneseText !== 'りんご'){
+                    timeModalFunc("りんごと入力してください",1)
+                    tour.show('japaneseStep');
+                }else{
+                    resolve();
+                }
+            });
+        },
+        text: '<p>タグを追加しましょう。</p><p>”タグの追加＋”をタップしてください。</p>',
+        attachTo: {
+            element: '#register-tags-add',
+            on: 'bottom'
+        },
+        advanceOn: {selector: '#register-tags-add', event: 'click'}
+    });
+
+    tour.addStep({
+        id: 'tagAddStep',
+        scrollTo: true,
+        text: '<p>タグ名を入力して”作成”をタップしましょう。</p><p>ここでは<span style="font-weight: bold; color:red;">フルーツ</span>と入力してください。\n</p>',
+        attachTo: {
+            element: '#tag-list-create',
+            on: 'bottom'
+        },
+        advanceOn: {selector: '#tag-list-create-button', event: 'click'}
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const tagCreateText = document.getElementById('tag-list-create-text').value;
+                if(tagCreateText !== 'フルーツ'){
+                    timeModalFunc("フルーツと入力してください",1)
+                    tour.show('tagAddStep');
+                }else{
+                    const attachElements = [].slice.call(document.querySelectorAll('.tag-list-item-button'));
+                    attachElements.forEach(element =>{
+                        if(element.textContent === "フルーツ"){
+                            element.setAttribute('id', 'tag-target1');
+                        }
+                    });
+                    resolve();
+                }
+            });
+        },
+        scrollTo: true,
+        text:'作成したタグをタップしてください。',
+        attachTo: {
+            element:'#tag-target1',
+            on: 'bottom'
+        },
+        advanceOn: {selector: '#tag-target1', event: 'click'}
+    });
+
+    tour.addStep({
+        text:'<p>タグが追加されました！</p> \
+        <p>タグは \
+        <span style="color: red;">複数個</span> \
+        追加することもできます。<\p> \
+        <p>今回はこのまま次へ進みましょう。</p>',
+        attachTo: {
+            element: '#register-tags',
+            on: 'bottom'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ',
+                // action() {
+                //     return this.show('addTagTan');
+                // }
+            }
+        ]
+    });
+
+    tour.addStep({
+        text: '”カード作成”をタップしましょう。',
+        attachTo: {
+            element: '#register-submit-button',
+            on: 'bottom'
+        },
+        advanceOn: {selector: '#register-submit-button', event: 'click'}
+    });
+
+    tour.addStep({
+        text: '<p>カードが作成されました！\n</p><p>一覧をタップしましょう。</p>',
+        attachTo: {
+            element: '#ft-list',
+            on: 'top'
+        },
+        advanceOn: {selector: '#ft-list', event: 'click'}
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                if(searchWindowOptionsLogic.textContent = '一部含む'){
+                    searchWindowOptionsLogic.textContent = '全て含む';
+                    searchWindowOptionsLogic.style.backgroundColor = '#ffa500';
+                }
+                if(searchWindowOptionsType.textContent = '単語名'){
+                    searchWindowOptionsType.textContent = 'タグ名';
+                    searchWindowOptionsType.style.backgroundColor = '#ffa500';
+                }
+                const e = new Event('click');
+                const searchWindowSearchText = document.getElementById('searchWindow-search-text');
+                const searchWindowSearchSubmit = document.getElementById('searchWindow-search-submit');
+                searchWindowSearchText.value = 'フルーツ';
+                searchWindowSearchSubmit.dispatchEvent(e);
+                resolve();
+            });
+        },
+        text: '追加したカードが表示されました',
+        attachTo: {
+            element: '#searchResult',
+            on: 'top'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ',
+                // action() {
+                //     return this.show('addTagTan');
+                // }
+            }
+        ]
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                db.words.bulkAdd([
+                    {
+                        english: "banana",
+                        japanese: "バナナ",
+                        tags: ["フルーツ","テスト","サンプル"]
+                    },
+                    {
+                        english: "welcome",
+                        japanese: "歓迎する",
+                        tags: ["サンプル"] 
+                    }
+                ]).then(() => {
+                    resolve();
+                });
+            });
+        },
+        text: '<p>チュートリアル用に単語を追加しました。</p><p><span style="color:red;">全件表示</span>で確認してみましょう。<p>',
+        attachTo: {
+            element: '#searchResult',
+            on: 'top'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ',
+            }
+        ]
+    });
+
+    tour.addStep({
+        id: 'allSearchStep',
+        text: '<p>全件表示する時は<span style="font-weight: bold; color:red;">入力欄を空</span>にしてください\n</p>テキストを消去したら次へ進みましょう。',
+        attachTo: {
+            element: '#searchWindow-search-text',
+            on: 'bottom'
+        },
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ'
+            }
+        ]
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const searchWindowSearchText = document.getElementById('searchWindow-search-text').value;
+                if(tagCreateText !== ''){
+                    timeModalFunc("空欄にしてください",1)
+                    tour.show('allSearchStep');
+                }else{
+                    resolve();
+                }
+            });
+        },
+        text: '<p>検索をタップしてください。</p>',
+        attachTo: {
+            element: '#class="searchWindow-search-submit"',
+            on: 'top'
+        },
+        advanceOn: {selector: '#searchWindow-search-submit', event: 'click'}
+    });
+
+
+
+    tour.start();
+
 }
 
-//  //改行させるためのファンクション
-// function fillTextFunc (context, text, x, y, lineHeight, maxWidth) {
-//     const textList = text.split('\n');
-//     textList.forEach(function(text, i) {
-//         // context.fillText(text, x, y+lineHeight*i, maxWidth);
-//         context.fillText(text, x, y+lineHeight*i);
-//     });
-// };
+/* ============================================================
+[Programs] その他
+[Outline] 
+その他の処理
+・時間で消えるポップアップ
 
-// const canvas = document.getElementById('canvas');
-// if (canvas.getContext) {
-//     const ctx = canvas.getContext('2d');
-//     // /* キャンバスのぼやけ対策のため、解像度の補正処理 */
-//     // canvas.style.width = listWrapper.clientWidth + 'px';
-//     // canvas.style.height = listWrapper.clientHeight / 2 + 'px';
-//     // 現在のディスプレイにおけるCSS解像度と物理解像度の比
-//     let scale = window.devicePixelRatio; 
-    
-//     // canvas.width = listWrapper.clientWidth * scale;
-//     // canvas.height = listWrapper.clientHeight / 2 * scale;
-//     canvas.width = listWrapper.clientWidth;
-//     canvas.height = listWrapper.clientHeight / 2;
+============================================================ */
 
-//     // alert(canvas.width);
+/* ============================Function============================ */
 
-//     const canvasFontSize = getComputedStyle(listWrapper).fontSize;
-//     // const canvasFontSize = '100px';
-//     // alert(canvas.width);
-//     ctx.font= canvasFontSize + " メイリオ";
-//     // alert(canvasFontSize);
-//     // ctx.font = "100px メイリオ";
+function timeModalFunc(text, type){
+    const timeModal = document.getElementById('time-modal');    // 表示要素の親要素
+    const timeModalContent = document.createElement('div');
+    if (type === 1){
+        timeModalContent.setAttribute('class', 'time-modal-content fade-out');
+    }else if (type === 2){
+        timeModalContent.setAttribute('class', 'time-modal-content2 fade-out');
+    }
+    timeModalContent.textContent = text; 
+    timeModal.appendChild(timeModalContent);
+    setTimeout(() => {
+        timeModalContent.remove();
+    }, 3800);
+}
 
-//     ctx.textBaseline = "top";
-//     const lineHeight = ctx.measureText("あ").width;// ’あ’はフォントサイズを取り出すための一例
-//     let point= [3,100,50,70,20,10,88];
-//     let goal = 60;
-//     let rate =canvas.height / goal;
-//     let pointDisplay = [];
 
-//     point.forEach((p) => {
-//         // const tmp = parseInt(p);
-//         const hour = parseInt(p / 60);
-//         const minute = parseInt(p - 60 * hour);
-//         let text = '';
-//         if (hour > 0){
-//             text = hour  + '時間' + '\n'+ minute + '分';
-//         }else{
-//             text =  minute + '分';
-//         }
-//         pointDisplay.push(text);
-//     });
 
-//     const wideUnit = canvas.width / 70.0;
-//     const move = wideUnit * 10;
-//     let drowPointX = wideUnit * 2.5;
-//     let drowLength = 0;
-//     for(let i = 0; i <7; i++){
-//         ctx.fillStyle = point[i] > goal ? ctx.fillStyle = "rgb(255, 89, 71)" :  "rgb(0, 255, 200)";
-//         drowLength = point[i] > goal ? goal * rate : point[i] * rate;
-//         ctx.fillRect(drowPointX , canvas.height, wideUnit * 5, - drowLength);
-//         ctx.fillStyle = "rgb(255, 255, 255)";
-//         // ctx.strokeText(pointDisplay[i], drowPointX, canvas.height - point[i]*rate);
-//         if(drowLength> lineHeight){
-//         fillTextFunc (ctx, pointDisplay[i], drowPointX, canvas.height - drowLength + 5, lineHeight, wideUnit * 5);
-//         }
-//         drowPointX += move;
-//     }
-//       ctx.scale(scale, scale);
-// }
 /* ============================================================
 [Programs] Q&Aシート
 [Outline] 
@@ -901,62 +1082,13 @@ DocumentFragmentに一度情報を集約して、まとめて更新するとい�
 
 ============================================================ */
 
-// const keyName = 'visited';
-// const keyValue = true;
-
-// if (!localStorage.getItem(keyName)) {
-//     //localStorageにキーと値を追加
-//     localStorage.setItem(keyName, keyValue);
-
-//     //ここに初回アクセス時の処理
-//     console.log("初めての訪問です");
 
 // } else {
 //     //ここに通常アクセス時の処理
 //     console.log("訪問済みです");
 
 // }
-// const tour = new Shepherd.Tour({
-//   useModalOverlay: true,
-//   defaults: {
-//     // classes: 'shadow-md bg-purple-dark',
-//     scrollTo: true
-//   }
-// });
 
-
-// tour.addStep({
-//     id: 'first',
-//     text: 'ようこそタグ単へ！ \n チュートリアルを開始しますか？',
-//     // attachTo: {
-//     //     element: '.searchWindow-options-type ',
-//     //     on: 'bottom'
-//     // },
-//     buttons: [
-//         {
-//             action: tour.cancel,
-//             secondary: true,
-//             text: 'いいえ'
-//         },
-//         {
-//             action: tour.next,
-//             text: 'はい',
-//             // action() {
-//             //     return this.show('addTagTan');
-//             // }
-//         }
-//     ]
-// });
-
-// tour.addStep({
-//     // id: 'addTagTan',
-//     text: 'クリックしよう？',
-//     attachTo: {
-//         element: '#ft-add',
-//         on: 'top'
-//     },
-//     advanceOn: {selector: '#ft-add', event: 'click'}
-// });
 
 // tour.addStep({
 //     beforeShowPromise: function() {
@@ -989,4 +1121,3 @@ DocumentFragmentに一度情報を集約して、まとめて更新するとい�
 //     //     currentTarget = addWrapper;
 //     // }
 // });
-// tour.start();
