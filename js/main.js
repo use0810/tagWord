@@ -134,6 +134,7 @@ const searchWindowOptionsType = document.getElementById('searchWindow-options-ty
 const searchWindowOptionsLogic = document.getElementById('searchWindow-options-logic');
 const searchWindowSearchText = document.getElementById('searchWindow-search-text');
 const searchWindowSearchSubmit = document.getElementById('searchWindow-search-submit');
+let editOk = true;
 
 /* ============================Function============================ */
 
@@ -141,6 +142,7 @@ const searchWindowSearchSubmit = document.getElementById('searchWindow-search-su
 function cardMakeFunc(record) {
         // 表示させるhtml
     const newTr = document.createElement("tr");
+    newTr.classList.add('cardTr');
     const newTd1 = document.createElement("td");
     const newTd2 = document.createElement("td");
     const td1Text = document.createTextNode(record.english);
@@ -158,7 +160,8 @@ function cardMakeFunc(record) {
     newTr.addEventListener('pointerdown', () => {
         timerID = setInterval(()=>{
             timerCount ++;
-            if(timerCount /6 === 1){
+            if((timerCount /6 === 1) &&
+                editOk === true){
                 // 0.6秒過ぎたら編集画面処理に移行しインターバルを初期化
                 editPageFunc(record.id, record.english,record.japanese,record.tags, newTr); 
                 timerCount = 0;
@@ -752,11 +755,7 @@ if (!localStorage.getItem(keyName)) {
 
     tour.addStep({
         id: 'first',
-        text: 'ようこそタグ単へ！ \n チュートリアルを開始しますか？',
-        // attachTo: {
-        //     element: '.searchWindow-options-type ',
-        //     on: 'bottom'
-        // },
+        text: '<p>ようこそタグ単へ！</p><p>チュートリアルを開始しますか？</p>',
         buttons: [
             {
                 action: tour.cancel,
@@ -779,19 +778,9 @@ if (!localStorage.getItem(keyName)) {
         advanceOn: {selector: '#ft-add', event: 'click'}
     });
 
-    // tour.addStep({
-    //     id: 'englishStep',
-    //     text: '覚えたい英単語を入力しましょう。',
-    //     attachTo: {
-    //         element: '#register-english',
-    //         on: 'bottom'
-    //     },
-    //     advanceOn: {selector: '#register-english', event: 'click'}
-    // });
-
     tour.addStep({
         id: 'englishStep',
-        text: '<p>覚えたい英単語を入力します。\n</p><p>ここでは<span style="font-weight: bold; color:red;">apple</span>と入力してください。\n</p>入力を完了したら次へ進みましょう。',
+        text: '<p>覚えたい英単語を入力します。</p><p>ここでは<span style="font-weight: bold; color:red;">apple</span>と入力してください。</p>入力を完了したら次へ進みましょう。',
         attachTo: {
             element: '#register-english',
             on: 'bottom'
@@ -817,7 +806,7 @@ if (!localStorage.getItem(keyName)) {
             });
         },
         id: 'japaneseStep',
-        text: '<p>和訳を入力します。\n</p><p>ここでは<span style="font-weight: bold; color:red;">りんご</span>と入力してください。\n</p>入力を完了したら次へ進みましょう。',
+        text: '<p>和訳を入力します。</p><p>ここでは<span style="font-weight: bold; color:red;">りんご</span>と入力してください。</p>入力を完了したら次へ進みましょう。',
         attachTo: {
             element: '#register-japanese',
             on: 'bottom'
@@ -858,7 +847,10 @@ if (!localStorage.getItem(keyName)) {
     tour.addStep({
         id: 'tagAddStep',
         scrollTo: true,
-        text: '<p>タグ名を入力して”作成”をタップしましょう。</p><p>ここでは<span style="font-weight: bold; color:red;">フルーツ</span>と入力してください。\n</p>',
+        text: '<p>タグ名を入力して”作成”をタップしましょう。</p> \
+        <p>ここでは \
+        <span style="font-weight: bold; color:red;">フルーツ</span> \
+        と入力してください。</p>',
         attachTo: {
             element: '#tag-list-create',
             on: 'bottom'
@@ -908,9 +900,6 @@ if (!localStorage.getItem(keyName)) {
             {
                 action: tour.next,
                 text: '次へ',
-                // action() {
-                //     return this.show('addTagTan');
-                // }
             }
         ]
     });
@@ -952,7 +941,7 @@ if (!localStorage.getItem(keyName)) {
                 resolve();
             });
         },
-        text: '追加したカードが表示されました',
+        text: '<p>追加したカードが表示されました。</p><p>次へ進みましょう。</p>',
         attachTo: {
             element: '#searchResult',
             on: 'top'
@@ -962,12 +951,42 @@ if (!localStorage.getItem(keyName)) {
             {
                 action: tour.next,
                 text: '次へ',
-                // action() {
-                //     return this.show('addTagTan');
-                // }
             }
         ]
     });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                editOk = false; // 編集画面への移行を一時停止
+                resolve();
+            });
+        },
+        text: '<p>日本語訳を表示するには<p>\
+        <p>カードを\
+        <span style="color: red;">タップ</span> \
+        してください。</p>',
+        attachTo: {
+            element: '.cardTr',
+            on: 'top'
+        },
+        advanceOn: {selector: '.cardTr', event: 'click'}
+    });
+    tour.addStep({
+        text: '<p>日本語訳が表示されました。</p><p>次へ進みましょう。</p>',
+        attachTo: {
+            element: '.cardTr',
+            on: 'top'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ',
+            }
+        ]
+    });
+
 
     tour.addStep({
         beforeShowPromise: function() {
@@ -988,10 +1007,12 @@ if (!localStorage.getItem(keyName)) {
                 });
             });
         },
-        text: '<p>チュートリアル用に単語を追加しました。</p><p><span style="color:red;">全件表示</span>で確認してみましょう。<p>',
+        text: '<p>チュートリアル用に単語を追加しました。</p> \
+        <p><span style="color:red;">全件表示</span>で確認してみましょう。<p>\
+        <p>次へ進んでください。</p>',
         attachTo: {
-            element: '#searchResult',
-            on: 'top'
+            element: '.searchWindow-search',
+            on: 'bottom'
         },
         canClickTarget: false,
         buttons: [
@@ -1004,7 +1025,10 @@ if (!localStorage.getItem(keyName)) {
 
     tour.addStep({
         id: 'allSearchStep',
-        text: '<p>全件表示する時は<span style="font-weight: bold; color:red;">入力欄を空</span>にしてください\n</p>テキストを消去したら次へ進みましょう。',
+        text: '<p>全件表示する時は \
+        <span style="font-weight: bold; color:red;">入力欄を空</span> \
+        にしてください</p> \
+        <p>テキストを消去したら次へ進みましょう。</p>',
         attachTo: {
             element: '#searchWindow-search-text',
             on: 'bottom'
@@ -1021,20 +1045,93 @@ if (!localStorage.getItem(keyName)) {
         beforeShowPromise: function() {
             return new Promise(function(resolve) {
                 const searchWindowSearchText = document.getElementById('searchWindow-search-text').value;
-                if(tagCreateText !== ''){
+                if(searchWindowSearchText === ''){
+                    resolve();
+                }else{
                     timeModalFunc("空欄にしてください",1)
                     tour.show('allSearchStep');
-                }else{
-                    resolve();
                 }
             });
         },
         text: '<p>検索をタップしてください。</p>',
         attachTo: {
-            element: '#class="searchWindow-search-submit"',
+            element: '#searchWindow-search-submit',
             on: 'top'
         },
         advanceOn: {selector: '#searchWindow-search-submit', event: 'click'}
+    });
+
+    tour.addStep({
+        text: '<p>全件表示されました。</p> \
+        <p>次へ進みましょう。</p>',
+        attachTo: {
+            element: '#searchResult',
+            on: 'top'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ',
+            }
+        ]
+    });
+
+    tour.addStep({
+        id: 'narrowSearchStep',
+        text: '<p>絞り込み検索をしてみましょう。<\p>\
+        <p>入力欄には<span style="font-weight: bold; color:red;">フルーツ　テスト</span>\
+        と入力してください。</p> \
+        <p>入力したら次へ進みましょう。</p>',
+        attachTo: {
+            element: '#searchWindow-search-text',
+            on: 'bottom'
+        },
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ'
+            }
+        ]
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const searchWindowSearchText = document.getElementById('searchWindow-search-text').value;
+                if((searchWindowSearchText === 'フルーツ　テスト') ||
+                    (searchWindowSearchText === 'フルーツ テスト')){
+                      resolve(); 
+                }else{
+                    timeModalFunc("「フルーツ　テスト」と入力してください",1)
+                    tour.show('narrowSearchStep');
+                }
+            });
+        },
+        text: '<p>検索をタップしてください。</p>',
+        attachTo: {
+            element: '#searchWindow-search-submit',
+            on: 'top'
+        },
+        advanceOn: {selector: '#searchWindow-search-submit', event: 'click'}
+    });
+
+    tour.addStep({
+        text: '<p>絞り込み検索されました。</p> \
+        <p>検索の範囲は以下のようになっています。</p> \
+        <p>次へ進みましょう。</p>\
+        <p class="demo-img"><img src="img/and.png"</p>',
+        attachTo: {
+            element: '#searchResult',
+            on: 'top'
+        },
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ',
+            }
+        ]
     });
 
 
