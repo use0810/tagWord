@@ -11,6 +11,7 @@ db.version(1).stores({              // テーブル作成
     words: "++id, japanese, english, *tags",
     tags: "tag"
 });
+
 // 一覧に全ての単語を表示
 const wordIndexes = [];
 db.words.toArray().then((records) => {
@@ -23,7 +24,7 @@ db.words.toArray().then((records) => {
     cardDisplayFunc(wordIndexes);   // ※使用関数は一覧画面の検索処理のfunctionに記述
 });
 
-// db.delete();
+
 // const tmp = ['tag'];
 // for(var i = 0; i < 5000; i++ ){
 // db.words.add({japanese: 'test', english: 'test note', tags: tmp});
@@ -42,7 +43,7 @@ db.words.toArray().then((records) => {
 const addWrapper = document.getElementById('addWrapper');  // コンテンツ（追加画面）
 const editWrapper = document.getElementById('editWrapper');  // コンテンツ（編集画面）
 const listWrapper = document.getElementById('listWrapper');  // コンテンツ（一覧画面）
-const homeWrapper = document.getElementById('homeWrapper');  // コンテンツ（ホーム画面）※未実装
+// const homeWrapper = document.getElementById('homeWrapper');  // コンテンツ（ホーム画面）※未実装
 // const testWrapper = document.getElementById('testWrapper');  // コンテンツ（テスト画面）
 const helpWrapper = document.getElementById('helpWrapper');  // コンテンツ（ヘルプ画面）
 
@@ -50,7 +51,7 @@ let currentTarget = listWrapper; // 現在の表示画面を記憶 初期値は�
 
 const addFt = document.getElementById('ft-add'); // 画面切り替え着火（追加）
 const listFt = document.getElementById('ft-list'); // 画面切り替え着火（リスト）
-const homeFt = document.getElementById('ft-home'); // 画面切り替え着火（ホーム
+// const homeFt = document.getElementById('ft-home'); // 画面切り替え着火（ホーム）未実装
 // const testFt = document.getElementById('ft-test'); // 画面切り替え着火（テスト）※未実装
 const helpFt = document.getElementById('ft-help'); // 画面切り替え着火（ヘルプ）
 
@@ -76,16 +77,17 @@ listFt.addEventListener('click', () => {
     }
 });
 
-// ホーム画面の表示 未実装
-homeFt.addEventListener('click', () => {
-    // ページ切り替え処理
-    if( currentTarget !== homeWrapper ){
-        currentTarget.classList.toggle('closed');
-        homeWrapper.classList.toggle('closed');
-        currentTarget = homeWrapper;
-    }
-});
+// // ホーム画面の表示 未実装
+// homeFt.addEventListener('click', () => {
+//     // ページ切り替え処理
+//     if( currentTarget !== homeWrapper ){
+//         currentTarget.classList.toggle('closed');
+//         homeWrapper.classList.toggle('closed');
+//         currentTarget = homeWrapper;
+//     }
+// });
 
+// テスト問題出題画面の表示 未実装
 // testFt.addEventListener('click', () => {
 //     // ページ切り替え処理
 //     if( currentTarget !== testWrapper ){
@@ -421,7 +423,6 @@ function addTagFunc(text){
         parent = document.getElementById('edit-tags');
         reference = document.getElementById('edit-tags-add');
     }
-
     try {
         [].slice.call(parent.children).forEach((child) => {
             if (child.textContent === text) {
@@ -455,7 +456,6 @@ function delTagFunc(newItemDel){
     const parent = newItemDel.closest('li');
     const tagName = newItemDel.previousElementSibling;
     const index = tagArray.indexOf(tagName.textContent);
-
     tagArray.splice(index, 1);
     tagList.removeChild(parent);
     db.tags.where({tag : tagName.textContent}).delete();
@@ -738,29 +738,49 @@ editSubmitEdit.addEventListener('click', () => {
 });
 
 /* ============================================================
+[Programs] ヘルプ画面の操作
+[Outline] 
+
+============================================================ */
+
+
+/* ============================Variable============================ */
+
+
+
+/* ============================Function============================ */
+
+
+
+/* ============================================================
 [Programs] 初回ログイン時のガイド
 [Outline] 
 
 ============================================================ */
 
-const keyName = 'visited';
-const keyValue = true;
+
+/* ============================Variable============================ */
+
+const keyName = 'visited';      // 初回アクセスかどうかの判定
+const keyValue = true;          // 初回アクセスかどうかの判定
 localStorage.removeItem(keyName);
 
+/* ============================event============================ */
+
 if (!localStorage.getItem(keyName)) {
-    //localStorageにキーと値を追加
+    // localStorageにキーと値を追加
     localStorage.setItem(keyName, keyValue);
 
+    // shepherd.js 初期設定
     const tour = new Shepherd.Tour({
+        useModalOverlay: true,
         confirmCancel: true,
-        confirmCancelMessage: 'チュートリアルを終了しますか？',
+        confirmCancelMessage: 'チュートリアルを終了しますか？\nチュートリアルはヘルプから再度始められます。',
+        scrollTo: true,
         defaultStepOptions: {
-            scrollTo: true,
             cancelIcon: {
                 enabled: true
             },
-            scrollTo: true,
-            useModalOverlay: true,
             when: {
                 show() {
                     try {
@@ -796,7 +816,8 @@ if (!localStorage.getItem(keyName)) {
     });
 
     tour.addStep({
-        text: 'まずは単語を追加しましょう。',
+        text: '<p>まずは単語を追加しましょう。</p>\
+        <span style="font-weight: bold; color:red;">追加</span>をタップしてください。</p>',
         attachTo: {
             element: '#ft-add',
             on: 'top'
@@ -891,12 +912,6 @@ if (!localStorage.getItem(keyName)) {
                     timeModalFunc("フルーツと入力してください",1)
                     tour.show('tagAddStep');
                 }else{
-                    const attachElements = [].slice.call(document.querySelectorAll('.tag-list-item-button'));
-                    attachElements.forEach(element =>{
-                        if(element.textContent === "フルーツ"){
-                            element.setAttribute('id', 'tag-target1');
-                        }
-                    });
                     resolve();
                 }
             });
@@ -905,12 +920,24 @@ if (!localStorage.getItem(keyName)) {
         text: '<p><span style="font-weight: bold; color:red;">作成</span>をタップしてください。</p>',
         attachTo: {
             element: '#tag-list-create-button',
+            // element: () => {return '#tag-list-creae-button'},
             on: 'bottom'
         },
         advanceOn: {selector: '#tag-list-create-button', event: 'click'}
     });
 
     tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const attachElements = [].slice.call(document.querySelectorAll('.tag-list-item-button'));
+                attachElements.forEach(element =>{
+                    if(element.textContent === "フルーツ"){
+                        element.setAttribute('id', 'tag-target1');
+                    }
+                });
+                resolve();
+            });
+        },
         scrollTo: true,
         text:'作成したタグをタップしてください。',
         attachTo: {
@@ -949,16 +976,6 @@ if (!localStorage.getItem(keyName)) {
     });
 
     tour.addStep({
-        text: '<p>カードが作成されました！</p>\
-        <p><span style="font-weight: bold; color:red;">一覧</span>をタップしてください。</p>',
-        attachTo: {
-            element: '#ft-list',
-            on: 'top'
-        },
-        advanceOn: {selector: '#ft-list', event: 'click'}
-    });
-
-    tour.addStep({
         beforeShowPromise: function() {
             return new Promise(function(resolve) {
                 if(searchWindowOptionsLogic.textContent = '一部含む'){
@@ -977,9 +994,19 @@ if (!localStorage.getItem(keyName)) {
                 resolve();
             });
         },
+        text: '<p>カードが作成されました！</p>\
+        <p><span style="font-weight: bold; color:red;">一覧</span>をタップしてください。</p>',
+        attachTo: {
+            element: '#ft-list',
+            on: 'top'
+        },
+        advanceOn: {selector: '#ft-list', event: 'click'}
+    });
+
+    tour.addStep({
         text: '<p>追加したカードが表示されました。</p><p>次へ進みましょう。</p>',
         attachTo: {
-            element: '#searchResult',
+            element: '.cardTr',
             on: 'top'
         },
         canClickTarget: false,
@@ -1061,12 +1088,19 @@ if (!localStorage.getItem(keyName)) {
     });
 
     tour.addStep({
-        text: '<p>全件表示されました。</p> \
-        <p>次へ進みましょう。</p>',
-        attachTo: {
-            element: '#searchResult',
-            on: 'top'
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                setTimeout(() => {
+                    resolve();
+                }, 1000);
+            });
         },
+        text: '<p>全件表示されました。</p>\
+        <p>次へ進みましょう。',
+        // attachTo: {
+        //     element: '#searchResult',
+        //     on: 'top'
+        // },
         canClickTarget: false,
         buttons: [
             {
@@ -1076,7 +1110,7 @@ if (!localStorage.getItem(keyName)) {
         ]
     });
 
-        tour.addStep({
+    tour.addStep({
         beforeShowPromise: function() {
             return new Promise(function(resolve) {
                 editOk = false; // 編集画面への移行を一時停止
@@ -1126,6 +1160,7 @@ if (!localStorage.getItem(keyName)) {
 
     tour.addStep({
         text: '<p>編集画面に切り替わりました。</p>\
+        <p>この画面でカードの内容の変更や削除が可能です。<\p>\
         <p>次へ進みましょう。</p>',
         canClickTarget: false,
         buttons: [
@@ -1138,8 +1173,7 @@ if (!localStorage.getItem(keyName)) {
 
     tour.addStep({
         beforeShowPromise: function() {
-            return new Promise(function(resolve) {
-                
+            return new Promise(function(resolve) {     
                 const attachElements = [].slice.call(document.querySelectorAll('.edit-tags-tag'));
                 attachElements.forEach(element =>{
                     if(element.textContent === "サンプル"){
@@ -1151,12 +1185,21 @@ if (!localStorage.getItem(keyName)) {
         },
         scrollTo: true,
         text: '<p>セットしたタグを消去してみましょう。</p>\
-        <p><span style="font-weight: bold; color:red;">タグ</span>をタップしてください。</p>',
+        <p><span style="font-weight: bold; color:red;">サンプル</span>タグをタップしてください。</p>',
         attachTo: {
             element: '#tag-target2',
             on: 'bottom'
         },
-        advanceOn: {selector: '#tag-target-2', event: 'click'}
+        advanceOn: {selector: '#tag-target2', event: 'click'}
+    });
+
+    tour.addStep({
+        text: '<p><span style="font-weight: bold; color:red;">保存</span>ボタンをタップして変更を確定してください。<\p>',
+        attachTo: {
+            element: '.edit-submit-edit',
+            on: 'top'
+        },
+        advanceOn: {selector: '.edit-submit-edit', event: 'click'}
     });
 
     tour.addStep({
@@ -1198,11 +1241,15 @@ if (!localStorage.getItem(keyName)) {
     });
 
     tour.addStep({
-        text: '<p>AND検索されました。</p>',
-        attachTo: {
-            element: '#searchResult',
-            on: 'top'
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                setTimeout(() => {
+                    resolve();
+                }, 1000);
+            });
         },
+        text: '<p>AND検索されました。</p>\
+        <p>次へ進みましょう。</p>',
         canClickTarget: false,
         buttons: [
             {
@@ -1247,11 +1294,15 @@ if (!localStorage.getItem(keyName)) {
     });
 
     tour.addStep({
-        text: '<p>OR検索されました。</p>',
-        attachTo: {
-            element: '#searchResult',
-            on: 'top'
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                setTimeout(() => {
+                    resolve();
+                }, 1000);
+            });
         },
+        text: '<p>OR検索されました。</p> \
+        <p>次へ進みましょう。</p>',
         canClickTarget: false,
         buttons: [
             {
@@ -1274,10 +1325,103 @@ if (!localStorage.getItem(keyName)) {
         ]
     });
 
+    tour.addStep({
+        text: '<p>単語名検索を使ってみましょう。</p>\
+        <p><span style="font-weight: bold; color:red;">タグ名</span>ボタンをタップしてください。</p>',
+        attachTo: {
+            element: '#searchWindow-options-type',
+            on: 'bottom'
+        },
+        advanceOn: {selector: '#searchWindow-options-type', event: 'click'}
+    });
+
+    tour.addStep({
+        id: 'wordSearchStep',
+        text: '<p>入力欄には<span style="font-weight: bold; color:red;">a</span>と入力してください。</p>\
+        <p>入力したら次へ進みましょう。</p>',
+        attachTo: {
+            element: '#searchWindow-search-text',
+            on: 'bottom'
+        },
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ'
+            }
+        ]
+    });
+
+    tour.addStep({
+        beforeShowPromise: function() {
+            return new Promise(function(resolve) {
+                const searchWindowSearchText = document.getElementById('searchWindow-search-text').value;
+                if(searchWindowSearchText === 'a'){
+                      resolve(); 
+                }else{
+                    timeModalFunc("「a」と入力してください",1)
+                    tour.show('wordSearchStep');
+                }
+            });
+        },
+        text: '<p><span style="font-weight: bold; color:red;">検索</span>をタップしてください。</p>',
+        attachTo: {
+            element: '#searchWindow-search-submit',
+            on: 'top'
+        },
+        advanceOn: {selector: '#searchWindow-search-submit', event: 'click'}
+    });
+
+    tour.addStep({
+        text: '<p>appleが表示されました。<p>\
+        <p>単語名検索は<span style="font-weight: bold; color:red;">前方から一致した単語(和訳もしは英訳)</span>が表示されます。</p>',
+        canClickTarget: false,
+        attachTo: {
+            element: '.cardTr',
+            on: 'top'
+        },
+        buttons: [
+            {
+                action: tour.next,
+                text: '次へ'
+            }
+        ]
+    });
+
+    tour.addStep({
+        text: '<p>お疲れさまでした。<p>\
+        <p>以上でチュートリアル終了です。</p>\
+        <p>チュートリアルはヘルプから再度始められます。</p>',
+        canClickTarget: false,
+        buttons: [
+            {
+                action: tour.next,
+                text: '完了'
+            }
+        ]
+    });
+
+    // ロングタップ時に次のツアーへ進む
     Shepherd.on('longtap', () => {
         if (currentTarget === editWrapper)
         Shepherd.activeTour.next();
     });
+
+    // Shepherd.on('before-show', () => {
+    //     alert(Shepherd.getCurrentStep);
+    // });
+
+    // // // テーブルをattachToする時に表示バグを防ぐため要素の遅延評価をする。クロージャを利用
+    // function lazyEvalFunc(){
+    //    function tableTarget(){
+    //         let target = document.getElementById('searchResult-table-body');
+    //         return target;
+    //     }
+    //     return tableTarget();
+    // }
+    // function lazyEvalFunc(){
+    //     const target = document.getElementById('searchResult-table-body');
+    //     return target;
+    // }
 
     tour.start();
 
